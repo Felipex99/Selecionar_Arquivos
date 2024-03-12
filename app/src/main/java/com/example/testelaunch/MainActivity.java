@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+
 public class MainActivity extends AppCompatActivity {
     private AppCompatButton botao;
     private LinearLayout frameArquivos;
@@ -33,6 +34,12 @@ public class MainActivity extends AppCompatActivity {
             bitmap = result;
             inserirGaleria(bitmap);
         }});
+    private ActivityResultLauncher<Void> launchDoc = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
+            result -> {
+        if(result != null){
+
+        }
+            });
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
