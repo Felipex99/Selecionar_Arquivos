@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+import com.github.barteksc.pdfviewer.PDFView;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -23,23 +25,29 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout frameArquivos;
     //private ActivityResultLauncher<Void> lauchFoto;
     private ImageView imagem;
+    private PDFView pdfView;
     private ImageView imagemDeck;
     private AlertDialog dialog;
     private Bitmap bitmap;
     private Intent intentFoto;
+    private ActivityResultLauncher<String[]> launchDoc = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
+            uri -> {
+                if(uri != null){
+                    imagem.setVisibility(View.INVISIBLE);
+                    pdfView.setVisibility(View.VISIBLE);
+                    pdfView.fromUri(uri);
+                    Toast.makeText(this, "URI: "+uri, Toast.LENGTH_SHORT).show();
+                }});
     private ActivityResultLauncher<Void> launchFoto = registerForActivityResult(new ActivityResultContracts.TakePicturePreview(),
     result -> {
         if(result != null){
+            pdfView.setVisibility(View.INVISIBLE);
+            imagem.setVisibility(View.VISIBLE);
             imagem.setImageBitmap(result);
             bitmap = result;
             inserirGaleria(bitmap);
         }});
-    private ActivityResultLauncher<Void> launchDoc = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
-            result -> {
-        if(result != null){
 
-        }
-            });
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         botao = findViewById(R.id.botao);
         frameArquivos = findViewById(R.id.arquivos);
         imagem = findViewById(R.id.imagem);
+        pdfView = findViewById(R.id.pdfView);
     }
     public void inserirGaleria(Bitmap result){
         View childImage = LayoutInflater.from(MainActivity.this).inflate(R.layout.imagem, null);
@@ -88,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
         documento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                launchDoc.launch(new String[] {"application/pdf"});
+                dialog.dismiss();
             }
         });
         foto.setOnClickListener(new View.OnClickListener() {
